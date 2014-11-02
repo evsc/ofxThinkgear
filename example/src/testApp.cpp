@@ -11,6 +11,7 @@ testApp::testApp() :
 
 //--------------------------------------------------------------
 void testApp::setup(){
+    tg.setup("/dev/rfcomm0", 57600);
     tg.addEventListener(this);
 
 }

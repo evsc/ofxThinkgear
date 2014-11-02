@@ -7,12 +7,12 @@
 #include <list>
 
 #ifdef TARGET_LINUX
-#define THINKGEAR_PORT "/dev/ttyUSB0"
+#define THINKGEAR_PORT "/dev/rfcomm0"
 #endif
 #ifdef TARGET_OSX
 #define THINKGEAR_PORT "/dev/tty.MindWave"
 #endif
-#define THINKGEAR_BAUD 115200
+#define THINKGEAR_BAUD 57600
 
 class ofxThinkgearEventArgs : public ofEventArgs {
 public:
@@ -20,16 +20,17 @@ public:
     unsigned char power;
     unsigned char poorSignal;
     unsigned char blinkStrength;
-    unsigned char attention;
+    unsigned char attention;    
     unsigned char meditation;
-    unsigned int eegDelta;
-    unsigned int eegTheta;
-    unsigned int eegLowAlpha;
-    unsigned int eegHighAlpha;
-    unsigned int eegLowBeta;
-    unsigned int eegHighBeta;
-    unsigned int eegLowGamma;
-    unsigned int eegMidGamma;
+
+    unsigned int eegDelta;      // 100000 / 1500000 . 0.5-2.75hz
+    unsigned int eegTheta;      // 300000 / 600000 . 3.5-6.75hz
+    unsigned int eegLowAlpha;   // 2500 / 75000 . 7.5-9.25hz
+    unsigned int eegHighAlpha;  // 2500 / 150000 . 10-11.75hz
+    unsigned int eegLowBeta;    // 1500 / 60000 . 13-16.75hz
+    unsigned int eegHighBeta;   // 2500 / 60000 . 18-29.75hz
+    unsigned int eegLowGamma;   // 5000 / 300000 . 31-39.75hz
+    unsigned int eegMidGamma;   // 5000 / 300000 . 41-49.75hz
 };
 
 enum EEG_KIND {
@@ -146,8 +147,11 @@ std::ostream& operator<<(std::ostream&, const EegDataPart&);
 class ofxThinkgear {
 public:
     ofSerial device;
+    int baudRate;
+    string devicePort;
     ofxThinkgearEventArgs values;
     bool isReady;
+
     ofEvent<ofxThinkgearEventArgs> onRaw;
     ofEvent<ofxThinkgearEventArgs> onPower;
     ofEvent<ofxThinkgearEventArgs> onPoorSignal;
@@ -158,6 +162,8 @@ public:
     ofEvent<ofxThinkgearEventArgs> onConnecting;
     ofEvent<ofxThinkgearEventArgs> onReady;
     ofEvent<ofMessage> onError;
+
+    void setup(string devicePort, int baudRate);
 
     ofxThinkgear();
     ~ofxThinkgear();

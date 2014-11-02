@@ -73,6 +73,11 @@ ofxThinkgear::~ofxThinkgear(){
     close();
 }
 
+void ofxThinkgear::setup(string devicePort, int baudRate){
+    this->devicePort = devicePort;
+    this->baudRate = baudRate;
+}
+
 void ofxThinkgear::close(){
     if (isReady){
         device.writeByte(0xC1);
@@ -83,7 +88,7 @@ void ofxThinkgear::close(){
 
 void ofxThinkgear::update(){
     if (!isReady){
-        if (device.setup(THINKGEAR_PORT, THINKGEAR_BAUD)){
+        if (device.setup(devicePort, baudRate)){
             device.flush();
             THINKGEAR_initParser(&parser, PARSER_TYPE_PACKETS, tgHandleDataValueFunc, this);
             isReady = true;
