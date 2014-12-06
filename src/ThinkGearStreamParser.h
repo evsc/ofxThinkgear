@@ -46,6 +46,7 @@ extern "C" {
 /* Data CODE definitions */
 #define PARSER_CODE_BATTERY            0x01
 #define PARSER_CODE_POOR_QUALITY       0x02
+#define PARSER_CODE_HEART_RATE         0x03
 #define PARSER_CODE_ATTENTION          0x04
 #define PARSER_CODE_MEDITATION         0x05
 #define PARSER_CODE_8BITRAW_SIGNAL     0x06

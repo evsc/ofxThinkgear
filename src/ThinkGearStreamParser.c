@@ -59,6 +59,7 @@ THINKGEAR_initParser( ThinkGearStreamParser *parser,
                           const unsigned char *value, void *customData),
                       void *customData ) {
 
+    printf( "THINKGEAR_initParser\n" );
     if( !parser ) return( -1 );
 
     /* Initialize the parser's state based on the parser type */
@@ -79,6 +80,7 @@ THINKGEAR_initParser( ThinkGearStreamParser *parser,
     parser->handleDataValue = handleDataValueFunc;
     parser->customData = customData;
 
+    printf( "ok\n" );
     return( 0 );
 }
 
@@ -87,6 +89,7 @@ THINKGEAR_initParser( ThinkGearStreamParser *parser,
  */
 int
 THINKGEAR_parseByte( ThinkGearStreamParser *parser, unsigned char byte ) {
+    // printf( "THINKGEAR_parseByte\n" );
 
     int returnValue = 0;
 

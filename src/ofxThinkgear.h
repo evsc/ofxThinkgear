@@ -16,12 +16,13 @@
 
 class ofxThinkgearEventArgs : public ofEventArgs {
 public:
-    short raw;
+    short raw;                  // -32768 to 32767, at 128 or 512 Hz (depends on chip)
     unsigned char power;
-    unsigned char poorSignal;
+    unsigned char poorSignal;   // 0 is good. 200 = electrodes not in contact with skin
+    unsigned char heartRate;    // 0-255
     unsigned char blinkStrength;
-    unsigned char attention;    
-    unsigned char meditation;
+    unsigned char attention;    // 0 = unable to calculate, 40-60 = neutral
+    unsigned char meditation;   // 0 = unable to calculate, 40-60 = neutral
 
     unsigned int eegDelta;      // 100000 / 1500000 . 0.5-2.75hz
     unsigned int eegTheta;      // 300000 / 600000 . 3.5-6.75hz
@@ -155,6 +156,7 @@ public:
     ofEvent<ofxThinkgearEventArgs> onRaw;
     ofEvent<ofxThinkgearEventArgs> onPower;
     ofEvent<ofxThinkgearEventArgs> onPoorSignal;
+    ofEvent<ofxThinkgearEventArgs> onHeartRate;
     ofEvent<ofxThinkgearEventArgs> onBlinkStrength;
     ofEvent<ofxThinkgearEventArgs> onAttention;
     ofEvent<ofxThinkgearEventArgs> onMeditation;
@@ -177,7 +179,8 @@ public:
 	void addEventListener(ListenerClass * listener){
 		ofAddListener(onRaw,listener,&ListenerClass::onThinkgearRaw);
 		ofAddListener(onPower,listener,&ListenerClass::onThinkgearPower);
-		ofAddListener(onPoorSignal,listener,&ListenerClass::onThinkgearPoorSignal);
+        ofAddListener(onPoorSignal,listener,&ListenerClass::onThinkgearPoorSignal);
+		ofAddListener(onHeartRate,listener,&ListenerClass::onThinkgearHeartRate);
 		ofAddListener(onBlinkStrength,listener,&ListenerClass::onThinkgearBlinkStrength);
 		ofAddListener(onAttention,listener,&ListenerClass::onThinkgearAttention);
 		ofAddListener(onMeditation,listener,&ListenerClass::onThinkgearMeditation);
@@ -191,7 +194,8 @@ public:
 	void removeEventListener(ListenerClass * listener){
 		ofRemoveListener(onRaw,listener,&ListenerClass::onThinkgearRaw);
 		ofRemoveListener(onPower,listener,&ListenerClass::onThinkgearPower);
-		ofRemoveListener(onPoorSignal,listener,&ListenerClass::onThinkgearPoorSignal);
+        ofRemoveListener(onPoorSignal,listener,&ListenerClass::onThinkgearPoorSignal);
+		ofRemoveListener(onHeartRate,listener,&ListenerClass::onThinkgearHeartRate);
 		ofRemoveListener(onBlinkStrength,listener,&ListenerClass::onThinkgearBlinkStrength);
 		ofRemoveListener(onAttention,listener,&ListenerClass::onThinkgearAttention);
 		ofRemoveListener(onMeditation,listener,&ListenerClass::onThinkgearMeditation);

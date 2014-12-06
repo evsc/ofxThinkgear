@@ -4,43 +4,48 @@ void tgHandleDataValueFunc( unsigned char extendedCodeLevel, unsigned char code,
     ofxThinkgear& tg = *reinterpret_cast<ofxThinkgear*>(customData);
     if (extendedCodeLevel == 0){
         switch (code) {
-            case 0x01:
+            case PARSER_CODE_BATTERY:
                 tg.values.power = value[0] & 0xff;
                 ofNotifyEvent(tg.onPower, tg.values);
                 break;
-            case 0x02:
+            case PARSER_CODE_POOR_QUALITY:
                 tg.values.poorSignal = value[0] & 0xff;
                 ofNotifyEvent(tg.onPoorSignal, tg.values);
                 break;
-            case 0x04:
+            case PARSER_CODE_HEART_RATE:
+                tg.values.heartRate = value[0] & 0xff;
+                ofNotifyEvent(tg.onHeartRate, tg.values);
+                break;
+            case PARSER_CODE_ATTENTION:
                 tg.values.attention = value[0] & 0xff;
                 ofNotifyEvent(tg.onAttention, tg.values);
                 break;
-            case 0x05:
+            case PARSER_CODE_MEDITATION:
                 tg.values.meditation = value[0] & 0xff;
                 ofNotifyEvent(tg.onMeditation, tg.values);
                 break;
             case 0x16:
                 tg.values.blinkStrength = value[0] & 0xff;
                 ofNotifyEvent(tg.onBlinkStrength, tg.values);
-            case( 0xd4 ):
-                // printf("Standby... autoconnecting\n");
+            case 0xd4:
+                printf("Standby... autoconnecting\n");
                 ofNotifyEvent(tg.onConnecting, tg.values);
                 tg.device.writeByte(0xc2);
                 break;
-            case( 0xd0 ):
+            case 0xd0:
                 ofNotifyEvent(tg.onReady, tg.values);
                 break;
-            case( 0xd1 ):
+            case 0xd1:
                 {
                     ofMessage err("Headset not found");
                     ofNotifyEvent(tg.onError, err);
                 }
                 break;
-            case 0x80:
+            case PARSER_CODE_RAW_SIGNAL:
                 tg.values.raw = (value[0] << 8) | value[1];
+                ofNotifyEvent(tg.onRaw, tg.values);
                 break;
-            case 0x83:
+            case PARSER_CODE_ASIC_EEG_POWER_INT:
                 {
                     int pos = 0;
                     tg.values.eegDelta = (value[pos] << 16) | (value[pos+1] << 8) | (value[pos+2]); pos += 3;
@@ -74,6 +79,7 @@ ofxThinkgear::~ofxThinkgear(){
 }
 
 void ofxThinkgear::setup(string devicePort, int baudRate){
+    printf( "ofxThinkgear Setup \t \t %d\n", baudRate );
     this->devicePort = devicePort;
     this->baudRate = baudRate;
 }
@@ -87,6 +93,7 @@ void ofxThinkgear::close(){
 }
 
 void ofxThinkgear::update(){
+    // printf( "." );
     if (!isReady){
         if (device.setup(devicePort, baudRate)){
             device.flush();
@@ -97,10 +104,12 @@ void ofxThinkgear::update(){
     if (!isReady)
         return;
     int n = device.available();
+    // printf( "isReady %d\t", n );
     if (n > 0){
         n = device.readBytes(buffer, min(n,512));
         for (int i=0; i<n; ++i){
-            THINKGEAR_parseByte(&parser, buffer[i]);
+            int returnValue = THINKGEAR_parseByte(&parser, buffer[i]);
+            // printf( "parsePackage \t %d\n", returnValue );
         }
     }
 }
